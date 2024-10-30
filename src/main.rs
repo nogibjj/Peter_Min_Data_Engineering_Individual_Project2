@@ -45,7 +45,7 @@ fn main() {
     match &cli.action {
         Actions::Extract => {
             println!("Extracting data: ");
-            if let Err(e) = extract("https://github.com/fivethirtyeight/data/blob/master/librarians/librarians-by-msa.csv", "data/librarians.csv") {
+            if let Err(e) = extract("https://raw.githubusercontent.com/fivethirtyeight/data/refs/heads/master/librarians/librarians-by-msa.csv", "data/librarians.csv") {
                 eprintln!("Error occurred during Extract: {}", e);
                 process::exit(1);
             }

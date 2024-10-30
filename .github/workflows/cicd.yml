@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: Rust CI/CD Pipeline
 
 on:
   push
@@ -22,6 +22,9 @@ jobs:
       - name: Check code
         run: make check
       
+      - name: Test code
+        run: make test
+      
       - name: Build binary artifact
         run: cargo build --release
       
@@ -29,4 +32,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Rust Binary Artifact
-          path: target/release/peter_min_data_engineering_project7
+          path: target/release/rust_cli_sqlite_librarian_data

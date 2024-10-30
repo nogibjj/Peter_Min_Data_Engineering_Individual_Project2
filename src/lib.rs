@@ -15,7 +15,7 @@ pub fn extract(url: &str, file_path: &str) -> io::Result<()> {
     Ok(())
 }
 
-pub fn load(file_path: &str) -> Result<()> {
+pub fn load(file_path: &str) -> Result<String> {
     let conn = Connection::open("Librarians.db")?;
     conn.execute("DROP TABLE IF EXISTS Librarians", [])?;
     conn.execute("CREATE TABLE Librarians (
@@ -40,7 +40,7 @@ pub fn load(file_path: &str) -> Result<()> {
             record[5].parse::<f64>().unwrap_or(0.0),
         ])?;
     }
-    Ok(())
+    Ok("Librarians.db".to_string())
 }
 
 pub fn create_record(
@@ -71,9 +71,9 @@ pub fn update_record(
     Ok(())
 }
 
-pub fn delete_record(state: &str) -> Result<()> {
+pub fn delete_record(area: &str) -> Result<()> {
     let conn = Connection::open("Librarians.db")?;
-    conn.execute("DELTE FROM Librarians WHERE state=?", params![state])?;
+    conn.execute("DELETE FROM Librarians WHERE area=?", params![area])?;
     Ok(())
 }
 
