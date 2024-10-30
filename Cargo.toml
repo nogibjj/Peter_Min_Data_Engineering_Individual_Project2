@@ -1,7 +1,17 @@
 [package]
-name = "peter_min_data_engineering_project7"
+name = "rust_cli_sqlite_librarian_data"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 clap = { version = "4.5.20", features = ["derive"] }
+csv = "1.3.0"
+reqwest = { version = "0.12.9", features = ["blocking"] }
+rusqlite = "0.32.1"
+
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+name = "rust_cli_sqlite_librarian_data"
+path = "src/main.rs"

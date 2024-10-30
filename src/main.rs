@@ -1,51 +1,121 @@
+use rust_cli_sqlite_librarian_data::{extract, load, create_record, update_record, delete_record, general_query};
 use clap::{Parser, Subcommand};
+use std::process;
 
-#[derive(Parser, Debug)]
-#[command(version, about, long_about = None)]
+/// Command-line arguments parser
+#[derive(Parser)]
+#[command(name = "Librarian Database SQLite Rust CLI")]
+#[command(about = "ETL Pipeline for librarians dataset", long_about = None)]
 struct Cli {
     #[command(subcommand)]
-    command: Commands,
+    action: Actions,
 }
 
-#[derive(Debug, Subcommand)]
-enum Commands {
-    CalculateTotalBalance {
-        initial_deposit: f64,
-        monthly_recurring_deposit: f64,
-        annual_growth_rate: f64,
-        compounding_frequency: i32,
-        time_period: i32,
+#[derive(Subcommand)]
+enum Actions {
+    Extract,
+    Load,
+    UpdateRecord {
+        state: String, 
+        area: String, 
+        total_employment: u64, 
+        emp_prse: f64, 
+        jobs_quotient_1000: f64, 
+        location_quotient: f64
+    },
+    DeleteRecord {
+        state: String,
+    },
+    CreateRecord {
+        state: String, 
+        area: String, 
+        total_employment: u64, 
+        emp_prse: f64, 
+        jobs_quotient_1000: f64, 
+        location_quotient: f64
+    },
+    GeneralQuery {
+        query: String,
     },
 }
 
 fn main() {
-    let args = Cli::parse();
+    let cli = Cli::parse();
 
-    match args.command {
-        Commands::CalculateTotalBalance {
-            initial_deposit,
-            monthly_recurring_deposit,
-            annual_growth_rate,
-            compounding_frequency,
-            time_period,
+    match &cli.action {
+        Actions::Extract => {
+            println!("Extracting data: ");
+            if let Err(e) = extract("https://github.com/fivethirtyeight/data/blob/master/librarians/librarians-by-msa.csv", "data/librarians.csv") {
+                eprintln!("Error occurred during Extract: {}", e);
+                process::exit(1);
+            }
+        }
+        Actions::Load => {
+            println!("Loading & transforming data: ");
+            if let Err(e) = load("data/librarians.csv") {
+                eprintln!("Error occurred during TL: {}", e);
+                process::exit(1);
+            }
+        }
+        Actions::UpdateRecord {
+            state,
+            area,
+            total_employment,
+            emp_prse,
+            jobs_quotient_1000, 
+            location_quotient,
         } => {
-            let total_balance = peter_min_data_engineering_project7::calculate_total_balance(
-                initial_deposit,
-                monthly_recurring_deposit,
-                annual_growth_rate,
-                compounding_frequency,
-                time_period,
-            );
-            let display_growth_rate = annual_growth_rate * 100.0;
-            println!();
-            println!("Your total balance after {} years with a initial deposit of ${} and a monthly contribution of ${} under a annual growth rate of {}% with compounding frequency of {} is ${:.4}.", 
-            time_period,
-            initial_deposit,
-            monthly_recurring_deposit,
-            display_growth_rate,
-            compounding_frequency,
-            total_balance);
-            println!();
+            if let Err(e) = update_record(
+                state,
+                area,
+                *total_employment,
+                *emp_prse,
+                *jobs_quotient_1000, 
+                *location_quotient,
+            ) {
+                eprintln!("Error occurred during Update Record: {}", e);
+                process::exit(1);
+            }
+        }
+        Actions::DeleteRecord { state } => {
+            if let Err(e) = delete_record(state) {
+                eprintln!("Error occurred during Delete Record: {}", e);
+                process::exit(1);
+            }
+        }
+        Actions::CreateRecord {
+            state,
+            area,
+            total_employment,
+            emp_prse,
+            jobs_quotient_1000, 
+            location_quotient,
+        } => {
+            if let Err(e) = create_record(
+                state,
+                area,
+                *total_employment,
+                *emp_prse,
+                *jobs_quotient_1000, 
+                *location_quotient,
+            ) {
+                eprintln!("Error occurred during Create Record: {}", e);
+                process::exit(1);
+            }
+        }
+        Actions::GeneralQuery { query } => {
+            match general_query(query) {
+                Ok(data) => {
+                    println!("Result of running your query: ");
+                    for row in data {
+                        println!("{:?}", row); // Use {:?} to print the tuple as Debug
+                    }
+                }
+                Err(e) => {
+                    eprintln!("Error occurred during querying: {}", e);
+                    process::exit(1);
+                }
+            }
         }
     }
 }
