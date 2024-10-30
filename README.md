@@ -31,3 +31,6 @@ The following commands are supported:
 
 ## Use of LLM
 The syntax and learning curve of Rust as a programming language for me who comes from a primarily scripting-based background (e.g. Python and JavaScript) is pretty challenging, so I applied LLM to help me debug issues around crates, modules import, debugging cargo commands, and write test cases for me throughout this project.
+
+## Demo Video
+Here is the [link](https://youtu.be/_JkRfR5ID0k) to my demo video on YouTube.
