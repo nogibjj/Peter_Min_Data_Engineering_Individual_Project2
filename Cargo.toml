@@ -1,0 +1,7 @@
+[package]
+name = "peter_min_data_engineering_project7"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap = { version = "4.5.20", features = ["derive"] }
