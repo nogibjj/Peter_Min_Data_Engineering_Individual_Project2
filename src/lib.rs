@@ -2,6 +2,7 @@ use csv::ReaderBuilder;
 use reqwest::blocking::get;
 use rusqlite::{params, Connection, Result};
 use std::fs::File;
+use std::path::Path;
 use std::io::{self, BufReader, Write};
 
 type LibrarianData = Vec<LibrarianRecord>;
@@ -9,6 +10,10 @@ type LibrarianRecord = (String, String, u64, f64, f64, f64);
 
 
 pub fn extract(url: &str, file_path: &str) -> io::Result<()> {
+    if let Some(parent) = Path::new(file_path).parent() {
+        let _  = std::fs::create_dir_all(parent);
+    }
+
     let response = get(url).expect("Failed to fetch data from URL.");
     let mut file = File::create(file_path)?;
     file.write_all(&response.bytes().expect("Failed to read bytes."))?;
